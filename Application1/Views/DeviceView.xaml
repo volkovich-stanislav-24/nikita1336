@@ -1,0 +1,71 @@
+﻿<Grid x:Class="Application1.Views.DeviceView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Application1.Views"
+    xmlns:vm="clr-namespace:Application1.ViewModels"
+    xmlns:s="clr-namespace:System;assembly=mscorlib"
+    xmlns:converters="clr-namespace:Application1.Converters"
+    x:Name="root" Height="128" Width="128"
+    Focusable="True" KeyUp="root_KeyUp" MouseLeftButtonDown="root_MouseLeftButtonDown" MouseLeftButtonUp="root_MouseLeftButtonUp" MouseMove="root_MouseMove"
+>
+    <Grid.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CustomTextBoxStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <ResourceDictionary x:Key="EllipseColors">
+                <SolidColorBrush x:Key="On">Green</SolidColorBrush>
+                <SolidColorBrush x:Key="Off">Red</SolidColorBrush>
+            </ResourceDictionary>
+            <s:Double x:Key="EllipseSize">16</s:Double>
+            <converters:DeviceViewIsOnImageConverter x:Key="IsOnImageConverter"/>
+            <converters:DeviceViewConnectionsCurMaxTextConverter x:Key="ConnectionsCurMaxTextConverter"/>
+        </ResourceDictionary>
+    </Grid.Resources>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="auto"></RowDefinition>
+        <RowDefinition Height="*"></RowDefinition>
+        <RowDefinition Height="auto"></RowDefinition>
+    </Grid.RowDefinitions>
+    <TextBox Style="{StaticResource CustomTextBoxStyle}" DataContext="{Binding ViewModel.Model, ElementName=root}" x:Name="Name" Grid.Row="0" KeyUp="TextBox_KeyUp" Validation.Error="Name_Error">
+        <Validation.ErrorTemplate>
+            <ControlTemplate/>
+        </Validation.ErrorTemplate>
+        <TextBox.Text>
+            <Binding Path="Name" ValidatesOnExceptions="True" NotifyOnValidationError="True"/>
+        </TextBox.Text>
+    </TextBox>
+    <Image Grid.Row="1" Source="{Binding ViewModel.Image, ElementName=root}"/>
+    <Grid DataContext="{Binding ViewModel.Model, ElementName=root}" Grid.Row="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Ellipse Panel.ZIndex="100" Fill="{Binding IsOn, Converter={StaticResource IsOnImageConverter}, ConverterParameter={StaticResource EllipseColors}}"
+            Width="{StaticResource EllipseSize}" Height="{StaticResource EllipseSize}" Grid.Column="1"
+            Focusable="True" MouseDown="Connections_MouseDown" MouseUp="Connections_MouseUp" KeyUp="Ellipse_KeyUp"
+        />
+        <TextBlock x:Name="tb"
+            Grid.Column="2"
+        >
+            <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource ConnectionsCurMaxTextConverter}">
+                    <Binding Path="Connections.Count"/>
+                    <Binding Path="MaxConnections"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+    </Grid>
+</Grid>
