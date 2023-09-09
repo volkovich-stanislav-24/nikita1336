@@ -1,4 +1,5 @@
-﻿using Application1.ViewModels;
+﻿using Application1.Models;
+using Application1.ViewModels;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -104,15 +105,6 @@ namespace Application1.Views
                 Canvas.SetLeft(valid_sender, mouse_position.X - valid_sender.Width * .5);
                 Canvas.SetTop(valid_sender, mouse_position.Y - valid_sender.Height * .5);
             }
-        }
-
-        void Connections_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-        }
-        void Connections_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ViewModel.Model.IsOn = !ViewModel.Model.IsOn;
             e.Handled = true;
         }
 
@@ -125,14 +117,7 @@ namespace Application1.Views
         void TextBox_KeyUp(object sender, KeyEventArgs e)
             => e.Handled = true;
 
-        /*void OnDelete(DeviceViewModel device_view) => ((Canvas)Parent).Children.Remove(this);*/
-
-        void Ellipse_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-                ViewModel.Model.IsOn = !ViewModel.Model.IsOn;
-            e.Handled = true;
-        }
+        // Name
 
         void Name_Error(object sender, ValidationErrorEventArgs e)
         {
@@ -140,7 +125,7 @@ namespace Application1.Views
             ToolTip tool_tip = new();
             tool_tip.Placement = PlacementMode.Center;
             tool_tip.PlacementTarget = valid_sender;
-            
+
             tool_tip.Content = e.Error.Exception.Message;
             Binding bind = new Binding();
             bind.Source = tool_tip;
@@ -150,12 +135,54 @@ namespace Application1.Views
             valid_sender.ToolTip = tool_tip;
             tool_tip.StaysOpen = false;
             tool_tip.IsOpen = true;
-            
+
             var bindingExpression = BindingOperations.GetBindingExpression(valid_sender, TextBox.TextProperty);
             if (bindingExpression != null && bindingExpression.ValidationError != null)
                 Validation.ClearInvalid(bindingExpression);
             var a = Validation.GetHasError(valid_sender);
             valid_sender.Text = ViewModel.Model.Name;
+        }
+
+        // Connections
+
+        void Connections_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ((MainView)Parent).is_trying_connect = this;
+            e.Handled = true;
+        }
+        void Connections_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (((MainView)Parent).is_trying_connect != this)
+            {
+                try
+                {
+                    ((MainView)Parent).EndConnect(this);
+                }
+                catch (Device.CantConnectError)
+                {
+                    var error_view = new ToolTip();
+                    error_view.Content = "Устройства уже соединены.";
+                    ToolTip = error_view;
+                    error_view.IsOpen = true;
+                }
+            }
+            else
+            {
+                ((MainView)Parent).is_trying_connect = null;
+                ViewModel.Model.IsOn = !ViewModel.Model.IsOn;
+            }
+            e.Handled = true;
+        }
+        void Connections_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                ViewModel.Model.IsOn = !ViewModel.Model.IsOn;
+            e.Handled = true;
+        }
+
+        private void Ellipse_MouseMove(object sender, MouseEventArgs e)
+        {
+
         }
     }
 }

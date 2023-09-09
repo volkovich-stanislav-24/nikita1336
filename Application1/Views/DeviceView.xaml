@@ -55,7 +55,7 @@
         </Grid.ColumnDefinitions>
         <Ellipse Panel.ZIndex="100" Fill="{Binding IsOn, Converter={StaticResource IsOnImageConverter}, ConverterParameter={StaticResource EllipseColors}}"
             Width="{StaticResource EllipseSize}" Height="{StaticResource EllipseSize}" Grid.Column="1"
-            Focusable="True" MouseDown="Connections_MouseDown" MouseUp="Connections_MouseUp" KeyUp="Ellipse_KeyUp"
+            Focusable="True" PreviewMouseUp="Connections_MouseUp" MouseMove="Ellipse_MouseMove" MouseDown="Connections_MouseDown"  KeyUp="Connections_KeyUp"
         />
         <TextBlock x:Name="tb"
             Grid.Column="2"

@@ -53,13 +53,21 @@ namespace Application1.Models
         readonly IList<Device> __connections = new ObservableCollection<Device>();
         public IList<Device> Connections => __connections;
 
-        public bool CanConnect() => __connections.Count + 1 <= MaxConnections;
+        public bool IsConnected(Device destination)
+        {
+            foreach (var connection in __connections)
+                if (connection == destination)
+                    return true;
+            return false;
+        }
+        public bool CanConnect(Device destination)
+            => __connections.Count + 1 <= MaxConnections && !IsConnected(destination);
         public delegate void ConnectHandler(Device first, Device second);
         public static event ConnectHandler? OnConnect;
         // Одностороннее соединение.
         public void __Connect(Device device)
         {
-            if (!CanConnect())
+            if (!CanConnect(device))
                 throw new CantConnectError(this, device);
             __connections.Add(device);
         }

@@ -80,10 +80,7 @@ namespace Application1.Views
                     MessageBoxButton.YesNo
                 ) == MessageBoxResult.Yes
             )
-            {
-                ((Canvas)Parent).Children.Remove(this);
                 FirstDeviceView.ViewModel.Model.Disconnect(SecondDeviceView.ViewModel.Model);
-            }
             e.Handled = true;
         }
     }

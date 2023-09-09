@@ -3,6 +3,8 @@ using Application1.ViewModels;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Application1.Views
 {
@@ -37,12 +39,59 @@ namespace Application1.Views
                 return to_return.AsReadOnly();
             }
         }
-        ConnectionView? __ConnectionView(DeviceView device_view)
+        ConnectionView? __ConnectionView(DeviceView source, DeviceView destination)
         {
             foreach (var connection_view in __ConnectionViews)
-                if (connection_view.FirstDeviceView == device_view || connection_view.SecondDeviceView == device_view)
+                if (
+                    connection_view.FirstDeviceView == source || connection_view.SecondDeviceView == destination
+                    || connection_view.FirstDeviceView == destination || connection_view.SecondDeviceView == source
+                )
                     return connection_view;
             return null;
+        }
+
+        public DeviceView? is_trying_connect;
+        Line? __connection_line;
+
+        public void EndConnect(DeviceView destination)
+        {
+            Children.Remove(__connection_line);
+            __connection_line = null;
+            var source = is_trying_connect;
+            is_trying_connect = null;
+            source.ViewModel.Model.Connect(destination.ViewModel.Model);
+        }
+
+        void Canvas_MouseUp(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (__connection_line != null)
+            {
+                Children.Remove(__connection_line);
+                __connection_line = null;
+                is_trying_connect = null;
+            }
+        }
+
+        void Canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (is_trying_connect != null && __connection_line == null)
+            {
+                __connection_line = new Line();
+                __connection_line.Stroke = new SolidColorBrush(Colors.Yellow);
+                __connection_line.StrokeThickness = 2;
+                __connection_line.X1 = Canvas.GetLeft(is_trying_connect) + is_trying_connect.ActualWidth * .5;
+                __connection_line.Y1 = Canvas.GetTop(is_trying_connect) + is_trying_connect.ActualHeight;
+                var mouse_position = e.GetPosition(this);
+                __connection_line.X2 = mouse_position.X;
+                __connection_line.Y2 = mouse_position.Y;
+                Children.Add(__connection_line);
+            }
+            else if (__connection_line != null)
+            {
+                var mouse_position = e.GetPosition(this);
+                __connection_line.X2 = mouse_position.X;
+                __connection_line.Y2 = mouse_position.Y;
+            }
         }
 
         public MainView()
@@ -55,7 +104,7 @@ namespace Application1.Views
                 Children.Add(cv);
             };
             Device.OnDisconnect += (d1, d2) => {
-                Children.Remove(__ConnectionView(__DeviceView(DeviceViewModel.One(d1))));
+                Children.Remove(__ConnectionView(__DeviceView(DeviceViewModel.One(d1)), __DeviceView(DeviceViewModel.One(d2))));
             };
             Device.OnDelete += (d) => {
                 Children.Remove(__DeviceView(DeviceViewModel.One(d)));
@@ -104,6 +153,11 @@ namespace Application1.Views
                     }
                 }
             }*/
+        }
+
+        void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            
         }
     }
 }
