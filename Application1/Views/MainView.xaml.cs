@@ -62,6 +62,11 @@ namespace Application1.Views
             source.ViewModel.Model.Connect(destination.ViewModel.Model);
         }
 
+        void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
+
         void Canvas_MouseUp(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (__connection_line != null)
@@ -77,6 +82,7 @@ namespace Application1.Views
             if (is_trying_connect != null && __connection_line == null)
             {
                 __connection_line = new Line();
+                __connection_line.IsHitTestVisible = false;
                 __connection_line.Stroke = new SolidColorBrush(Colors.Yellow);
                 __connection_line.StrokeThickness = 2;
                 __connection_line.X1 = Canvas.GetLeft(is_trying_connect) + is_trying_connect.ActualWidth * .5;
@@ -92,11 +98,18 @@ namespace Application1.Views
                 __connection_line.X2 = mouse_position.X;
                 __connection_line.Y2 = mouse_position.Y;
             }
+            e.Handled = true;
         }
 
         public MainView()
         {
             InitializeComponent();
+            Device.OnCreated += (d) =>
+            {
+                var dv = new DeviceView();
+                dv.ViewModel = DeviceViewModel.One(d);
+                Children.Add(dv);
+            };
             Device.OnConnect += (d1, d2) => {
                 var cv = new ConnectionView();
                 cv.FirstDeviceView = __DeviceView(DeviceViewModel.One(d1));
@@ -112,7 +125,7 @@ namespace Application1.Views
 
             // Test
 
-            var d1 = new PC("PC 1");
+            /*var d1 = new PC("PC 1");
             d1.MaxConnections = 8;
             DeviceView1.ViewModel = new DeviceViewModel(d1);
             var d2 = new PC("PC 2");
@@ -130,7 +143,7 @@ namespace Application1.Views
             d4.MaxConnections = 16;
             DeviceView4.ViewModel = new DeviceViewModel(d4);
             d4.MaxConnections = 32;
-            d3.Connect(d2);
+            d3.Connect(d2);*/
 
             // Test
 
@@ -153,11 +166,6 @@ namespace Application1.Views
                     }
                 }
             }*/
-        }
-
-        void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            
         }
     }
 }

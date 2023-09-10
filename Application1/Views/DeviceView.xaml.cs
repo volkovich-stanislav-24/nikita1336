@@ -104,8 +104,8 @@ namespace Application1.Views
                 var mouse_position = e.GetPosition((UIElement)valid_sender.Parent);
                 Canvas.SetLeft(valid_sender, mouse_position.X - valid_sender.Width * .5);
                 Canvas.SetTop(valid_sender, mouse_position.Y - valid_sender.Height * .5);
+                e.Handled = true;
             }
-            e.Handled = true;
         }
 
         void root_KeyUp(object sender, KeyEventArgs e)
@@ -139,8 +139,32 @@ namespace Application1.Views
             var bindingExpression = BindingOperations.GetBindingExpression(valid_sender, TextBox.TextProperty);
             if (bindingExpression != null && bindingExpression.ValidationError != null)
                 Validation.ClearInvalid(bindingExpression);
-            var a = Validation.GetHasError(valid_sender);
             valid_sender.Text = ViewModel.Model.Name;
+        }
+
+        // Max Connections
+
+        void MaxConnections_Error(object sender, ValidationErrorEventArgs e)
+        {
+            var valid_sender = (TextBox)sender;
+            ToolTip tool_tip = new();
+            tool_tip.Placement = PlacementMode.Center;
+            tool_tip.PlacementTarget = valid_sender;
+
+            tool_tip.Content = "Максимальное количество соединений не может быть меньше текущего.";
+            Binding bind = new Binding();
+            bind.Source = tool_tip;
+            bind.Path = new PropertyPath("ActualHeight");
+            bind.Mode = BindingMode.OneWay;
+            tool_tip.SetBinding(System.Windows.Controls.ToolTip.VerticalOffsetProperty, bind);
+            valid_sender.ToolTip = tool_tip;
+            tool_tip.StaysOpen = false;
+            tool_tip.IsOpen = true;
+
+            var bindingExpression = BindingOperations.GetBindingExpression(valid_sender, TextBox.TextProperty);
+            if (bindingExpression != null && bindingExpression.ValidationError != null)
+                Validation.ClearInvalid(bindingExpression);
+            valid_sender.Text = ViewModel.Model.MaxConnections.ToString();
         }
 
         // Connections
@@ -178,11 +202,6 @@ namespace Application1.Views
             if (e.Key == Key.Enter)
                 ViewModel.Model.IsOn = !ViewModel.Model.IsOn;
             e.Handled = true;
-        }
-
-        private void Ellipse_MouseMove(object sender, MouseEventArgs e)
-        {
-
         }
     }
 }

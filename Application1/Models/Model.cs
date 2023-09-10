@@ -29,10 +29,14 @@ namespace Application1.Models
                 _OnPropertyChanged(nameof(Name));
             }
         }
+        public delegate void Created(This model);
+        public static event Created? OnCreated;
         protected Model(string name)
         {
             Name = name;
             __all.Add((This)this);
+            if (OnCreated != null)
+                OnCreated((This)this);
         }
         protected virtual void _OnDelete()
         {
@@ -43,7 +47,7 @@ namespace Application1.Models
             __all.Remove((This)this);
         }
         public override string ToString()
-            => $"Model[{Name}]";
+            => $"{GetType().Name}[{Name}]";
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void _OnPropertyChanged([CallerMemberName] string property_name = "")

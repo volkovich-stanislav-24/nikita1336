@@ -6,6 +6,12 @@ namespace Application1.Models
 {
     public abstract class Device : Model<Device>
     {
+        public sealed class MaxConnectionsError : Exception
+        {
+            public MaxConnectionsError()
+            {
+            }
+        }
         public abstract class ConnectionError : Exception
         {
             public readonly Device from;
@@ -46,6 +52,8 @@ namespace Application1.Models
             get => __max_connections;
             set
             {
+                if (value < Connections.Count)
+                    throw new MaxConnectionsError();
                 __max_connections = value;
                 _OnPropertyChanged(nameof(MaxConnections));
             }
@@ -66,14 +74,14 @@ namespace Application1.Models
         public static event ConnectHandler? OnConnect;
         // Одностороннее соединение.
         public void __Connect(Device device)
-        {
-            if (!CanConnect(device))
-                throw new CantConnectError(this, device);
-            __connections.Add(device);
-        }
+            => __connections.Add(device);
         // Двусторонее соединение.
         public void Connect(Device device)
         {
+            if (!CanConnect(device))
+                throw new CantConnectError(this, device);
+            if (!device.CanConnect(this))
+                throw new CantConnectError(device, this);
             __Connect(device);
             device.__Connect(this);
             if (OnConnect != null)

@@ -8,5 +8,15 @@ namespace Application1
         {
             InitializeComponent();
         }
+
+        private void Canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Canvas_MouseUp_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

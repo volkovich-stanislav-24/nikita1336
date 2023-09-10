@@ -5,9 +5,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d"
     xmlns:s="clr-namespace:System;assembly=mscorlib"
-    xmlns:local="clr-namespace:Application1.Views"
+    xmlns:vs="clr-namespace:Application1.Views"
     xmlns:Converters="clr-namespace:Application1.Converters"
-    x:Name="root" d:DesignHeight="512" d:DesignWidth="512"
+    x:Name="root"
+    d:DesignHeight="512" d:DesignWidth="512"
 >
     <Canvas.Resources>
         <SolidColorBrush x:Key="LineColor">Black</SolidColorBrush>
@@ -20,7 +21,7 @@
     >
         <Line.X1>
             <MultiBinding Converter="{StaticResource LineXConverter}">
-                <Binding ElementName="root" Path="FirstDeviceView.Width"/>
+                <Binding ElementName="root" Path="FirstDeviceView.ActualWidth"/>
                 <Binding ElementName="root" Path="FirstDeviceView.(Canvas.Left)"/>
             </MultiBinding>
         </Line.X1>
@@ -38,7 +39,7 @@
         </Line.X2>
         <Line.Y2>
             <MultiBinding Converter="{StaticResource LineYConverter}">
-                <Binding ElementName="root" Path="SecondDeviceView.Height"/>
+                <Binding ElementName="root" Path="SecondDeviceView.ActualHeight"/>
                 <Binding ElementName="root" Path="SecondDeviceView.(Canvas.Top)"/>
             </MultiBinding>
         </Line.Y2>

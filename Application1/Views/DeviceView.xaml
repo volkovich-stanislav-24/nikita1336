@@ -55,17 +55,24 @@
         </Grid.ColumnDefinitions>
         <Ellipse Panel.ZIndex="100" Fill="{Binding IsOn, Converter={StaticResource IsOnImageConverter}, ConverterParameter={StaticResource EllipseColors}}"
             Width="{StaticResource EllipseSize}" Height="{StaticResource EllipseSize}" Grid.Column="1"
-            Focusable="True" PreviewMouseUp="Connections_MouseUp" MouseMove="Ellipse_MouseMove" MouseDown="Connections_MouseDown"  KeyUp="Connections_KeyUp"
+            Focusable="True" MouseUp="Connections_MouseUp" MouseDown="Connections_MouseDown"  KeyUp="Connections_KeyUp"
         />
-        <TextBlock x:Name="tb"
-            Grid.Column="2"
-        >
-            <TextBlock.Text>
-                <MultiBinding Converter="{StaticResource ConnectionsCurMaxTextConverter}">
-                    <Binding Path="Connections.Count"/>
-                    <Binding Path="MaxConnections"/>
-                </MultiBinding>
-            </TextBlock.Text>
-        </TextBlock>
+        <Grid Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding Connections.Count}" Grid.Column="0"/>
+            <TextBlock Text="/" Grid.Column="1"/>
+            <TextBox Style="{StaticResource CustomTextBoxStyle}" Validation.Error="MaxConnections_Error" Grid.Column="2">
+                <Validation.ErrorTemplate>
+                    <ControlTemplate/>
+                </Validation.ErrorTemplate>
+                <TextBox.Text>
+                    <Binding Path="MaxConnections" ValidatesOnExceptions="True" NotifyOnValidationError="True"/>
+                </TextBox.Text>
+            </TextBox>
+        </Grid>
     </Grid>
 </Grid>
