@@ -8,25 +8,27 @@ using System.Windows.Input;
 
 namespace Application1.Converters
 {
-    class ConnectionViewLineXConverter : IMultiValueConverter
+    abstract class ConnectionViewLineXYConverter
     {
+        protected double ValueAsDouble(object value)
+            => value is double && !double.IsNaN((double)value) ? (double)value : 0;
+    }
+
+    sealed class ConnectionViewLineXConverter : ConnectionViewLineXYConverter, IMultiValueConverter
+    {
+        // values[0] - width
+        // values[1] - x
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            double width = values[0] is double && !double.IsNaN((double)values[1]) ? (double)values[0] : 0;
-            double x = values[1] is double && !double.IsNaN((double)values[1]) ? (double)values[1] : 0;
-            return x + width * .5;
-        }
+            => ValueAsDouble(values[1]) + ValueAsDouble(values[0]) * .5;
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
-    class ConnectionViewLineYConverter : IMultiValueConverter
+    sealed class ConnectionViewLineYConverter : ConnectionViewLineXYConverter, IMultiValueConverter
     {
+        // values[0] - height
+        // values[1] - y
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            double height = values[0] is double && !double.IsNaN((double)values[1]) ? (double)values[0] : 0;
-            double y = values[1] is double && !double.IsNaN((double)values[1]) ? (double)values[1] : 0;
-            return y + height;
-        }
+            => ValueAsDouble(values[1]) + ValueAsDouble(values[0]);
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
@@ -59,18 +61,15 @@ namespace Application1.Views
             get => (DeviceView)GetValue(SecondDeviceViewProperty);
             set => SetValue(SecondDeviceViewProperty, value);
         }
+
         public ConnectionView()
         {
             InitializeComponent();
         }
 
-        void line_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            var valid_sender = ((Line)sender);
-            valid_sender.Focus();
-            e.Handled = true;
-        }
-        void line_KeyUp(object sender, KeyEventArgs e)
+        // Line
+
+        void Line_KeyUp(object sender, KeyEventArgs e)
         {
             var valid_sender = ((Line)sender);
             if (e.Key == Key.Delete
@@ -81,6 +80,13 @@ namespace Application1.Views
                 ) == MessageBoxResult.Yes
             )
                 FirstDeviceView.ViewModel.Model.Disconnect(SecondDeviceView.ViewModel.Model);
+            e.Handled = true;
+        }
+
+        void Line_MouseLeftUp(object sender, MouseButtonEventArgs e)
+        {
+            var valid_sender = ((Line)sender);
+            valid_sender.Focus();
             e.Handled = true;
         }
     }

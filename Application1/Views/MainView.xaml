@@ -6,7 +6,7 @@
     mc:Ignorable="d"
     xmlns:local="clr-namespace:Application1.Views"
     d:DesignHeight="512" d:DesignWidth="512"
-    Background="Transparent"
-    MouseDown="Canvas_MouseDown" MouseMove="Canvas_MouseMove" MouseUp="Canvas_MouseUp"
+    Background="Transparent" ClipToBounds="True"
+    MouseDown="Canvas_MouseDown" MouseMove="Canvas_MouseMove" MouseUp="Canvas_MouseUp" AllowDrop="True" Drop="Canvas_Drop"
 >
 </Canvas>

@@ -107,6 +107,8 @@ namespace Application1.Views
             Device.OnCreated += (d) =>
             {
                 var dv = new DeviceView();
+                Canvas.SetLeft(dv, __new_device_view_point.X - dv.Width * .5);
+                Canvas.SetTop(dv, __new_device_view_point.Y - dv.Height * .5);
                 dv.ViewModel = DeviceViewModel.One(d);
                 Children.Add(dv);
             };
@@ -119,33 +121,9 @@ namespace Application1.Views
             Device.OnDisconnect += (d1, d2) => {
                 Children.Remove(__ConnectionView(__DeviceView(DeviceViewModel.One(d1)), __DeviceView(DeviceViewModel.One(d2))));
             };
-            Device.OnDelete += (d) => {
+            Device.OnDeleted += (d) => {
                 Children.Remove(__DeviceView(DeviceViewModel.One(d)));
             };
-
-            // Test
-
-            /*var d1 = new PC("PC 1");
-            d1.MaxConnections = 8;
-            DeviceView1.ViewModel = new DeviceViewModel(d1);
-            var d2 = new PC("PC 2");
-            d2.MaxConnections = 8;
-            d2.MaxConnections = 16;
-            DeviceView2.ViewModel = new DeviceViewModel(d2);
-            d2.MaxConnections = 32;
-            d1.Connect(d2);
-
-            var d3 = new PC("PC 3");
-            d3.MaxConnections = 8;
-            DeviceView3.ViewModel = new DeviceViewModel(d3);
-            var d4 = new PC("PC 4");
-            d4.MaxConnections = 8;
-            d4.MaxConnections = 16;
-            DeviceView4.ViewModel = new DeviceViewModel(d4);
-            d4.MaxConnections = 32;
-            d3.Connect(d2);*/
-
-            // Test
 
             /*foreach (var device_view in __DeviceViews)
             {
@@ -166,6 +144,30 @@ namespace Application1.Views
                     }
                 }
             }*/
+        }
+
+        Point __new_device_view_point;
+
+        private void Canvas_Drop(object sender, DragEventArgs e)
+        {
+            __new_device_view_point = e.GetPosition(this);
+            string name = "New PC";
+            string id = "";
+            long id_as_long = 1;
+            do
+            {
+                try
+                {
+                    new PC(name + id);
+                    e.Handled = true;
+                    return;
+                }
+                catch (PC.NameError)
+                {
+                    id = id_as_long.ToString();
+                    ++id_as_long;
+                }
+            } while (true);
         }
     }
 }

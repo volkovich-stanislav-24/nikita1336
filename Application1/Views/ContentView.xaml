@@ -1,18 +1,14 @@
 ﻿<ScrollViewer x:Class="Application1.Views.ContentView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:vs="clr-namespace:Application1.Views"
+    xmlns:vms="clr-namespace:Application1.ViewModels"
     d:DesignHeight="512" d:DesignWidth="128"
 >
-    <ScrollViewer.Resources>
-        
-    </ScrollViewer.Resources>
     <StackPanel>
-        <Button x:Name="PC" Height="128" Click="PC_Click">
-            <Image Source="/Content/Images/PC.png"/>
-        </Button>
+        <vs:DeviceTypeView ViewModel="{StaticResource PCTypeViewModel}" MouseLeftButtonDown="__DeviceTypeView_MouseLeftButtonDown"/>
     </StackPanel>
 </ScrollViewer>

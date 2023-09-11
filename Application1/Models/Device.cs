@@ -6,35 +6,40 @@ namespace Application1.Models
 {
     public abstract class Device : Model<Device>
     {
+        // Errors
+
         public sealed class MaxConnectionsError : Exception
         {
-            public MaxConnectionsError()
+            public MaxConnectionsError() : base("Максимальное количество соединений не должно быть меньше текущего.")
             {
             }
         }
         public abstract class ConnectionError : Exception
         {
-            public readonly Device from;
-            public readonly Device to;
+            protected ConnectionError(string message) : base(message)
+            {
+            }
+        }
+        public sealed class NoConnectionError : ConnectionError
+        {
+            public NoConnectionError() : base("Должно быть свободное соединение.")
+            {
+            }
+        }
+        public sealed class ConnectedError : ConnectionError
+        {
+            public ConnectedError() : base("Устройства не должны быть уже соединены.")
+            {
+            }
+        }
+        public sealed class DisconnectedError : ConnectionError
+        {
+            public DisconnectedError() : base("Устройства должны быть соединены.")
+            {
+            }
+        }
 
-            protected ConnectionError(Device from, Device to)
-            {
-                this.from = from;
-                this.to = to;
-            }
-        }
-        public sealed class CantConnectError : ConnectionError
-        {
-            public CantConnectError(Device from, Device to) : base(from, to)
-            {
-            }
-        }
-        public sealed class CantDiscsonnectError : ConnectionError
-        {
-            public CantDiscsonnectError(Device from, Device to) : base(from, to)
-            {
-            }
-        }
+        // Data
 
         bool __is_on;
         public bool IsOn
@@ -52,69 +57,73 @@ namespace Application1.Models
             get => __max_connections;
             set
             {
-                if (value < Connections.Count)
+                if (value < Connections.Count) // Если новое максимальное количество соединений меньше текущего, то ошибка, так как непонятно, какие отключить.
                     throw new MaxConnectionsError();
                 __max_connections = value;
                 _OnPropertyChanged(nameof(MaxConnections));
             }
         }
-        readonly IList<Device> __connections = new ObservableCollection<Device>();
-        public IList<Device> Connections => __connections;
-
+        readonly ObservableCollection<Device> __connections = new(); // Используем ObservableCollection, чтобы автоматически сообщать WPF об изменении элементов.
+        public IReadOnlyList<Device> Connections => __connections;
         public bool IsConnected(Device destination)
+            => __connections.Contains(destination);
+
+        // Behavior: mutable methods
+
+        public delegate void ConnectDisconnectHandler(Device source, Device destination);
+        // Пусть модель сообщает о соединении.
+        public static event ConnectDisconnectHandler? OnConnect;
+        // Одностороннее соединение. Применяется только с обратным.
+        void __Connect(Device destination)
         {
-            foreach (var connection in __connections)
-                if (connection == destination)
-                    return true;
-            return false;
+            if (__connections.Count == MaxConnections) // Если текущее количество соединений равно максимальному, то ошибка.
+                throw new NoConnectionError();
+            if (IsConnected(destination)) // Если модели уже соединены, то ошибка.
+                throw new ConnectedError();
+            __connections.Add(destination);
         }
-        public bool CanConnect(Device destination)
-            => __connections.Count + 1 <= MaxConnections && !IsConnected(destination);
-        public delegate void ConnectHandler(Device first, Device second);
-        public static event ConnectHandler? OnConnect;
-        // Одностороннее соединение.
-        public void __Connect(Device device)
-            => __connections.Add(device);
         // Двусторонее соединение.
-        public void Connect(Device device)
+        public void Connect(Device destination)
         {
-            if (!CanConnect(device))
-                throw new CantConnectError(this, device);
-            if (!device.CanConnect(this))
-                throw new CantConnectError(device, this);
-            __Connect(device);
-            device.__Connect(this);
+            __Connect(destination);
+            destination.__Connect(this);
             if (OnConnect != null)
-                OnConnect(this, device);
+                OnConnect(this, destination);
         }
-        public delegate void DisconnectHandler(Device first, Device second);
-        public static event DisconnectHandler? OnDisconnect;
-        // Односторонее отсоединение.
-        void __Disconnect(Device device)
+        // Пусть модель сообщает об отсоединении.
+        public static event ConnectDisconnectHandler? OnDisconnect;
+        // Односторонее отсоединение. Применяется только с обратным.
+        void __Disconnect(Device destination)
         {
-            if (!__connections.Remove(device))
-                throw new CantDiscsonnectError(this, device);
+            if (!__connections.Remove(destination)) // Если модели не соединены, то ошибка.
+                throw new DisconnectedError();
         }
         // Двустороннее отсоединение.
-        public void Disconnect(Device device)
+        public void Disconnect(Device destination)
         {
-            __Disconnect(device);
-            device.__Disconnect(this);
+            __Disconnect(destination);
+            destination.__Disconnect(this);
             if (OnDisconnect != null)
-                OnDisconnect(this, device);
+                OnDisconnect(this, destination);
         }
+
+        // Construction
 
         public Device(string name) : base(name)
         {
         }
-        public delegate void DeleteHandler(Device device);
-        public static event DeleteHandler? OnDelete;
+
+        // Destruction
+
+        // Пусть при удалении все соединения отключатся.
         protected override void _OnDelete()
         {
-            for (int i = __connections.Count - 1; i >= 0; --i)
-                __connections[i].Disconnect(this);
-            if (OnDelete != null)
-                OnDelete(this);
+            foreach (var connection in __connections)
+            {
+                connection.__Disconnect(this); // Односторонне отсоединяем, так как модель будет удалена, нет смысла изменять её данные.
+                if (OnDisconnect != null) // Всё равно уведомляем о двустороннем отсоединении, так как модели больше не соединены, первая будет удалена.
+                    OnDisconnect(this, connection);
+            }
         }
     }
 }

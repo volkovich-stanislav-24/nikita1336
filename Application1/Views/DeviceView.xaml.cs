@@ -125,7 +125,6 @@ namespace Application1.Views
             ToolTip tool_tip = new();
             tool_tip.Placement = PlacementMode.Center;
             tool_tip.PlacementTarget = valid_sender;
-
             tool_tip.Content = e.Error.Exception.Message;
             Binding bind = new Binding();
             bind.Source = tool_tip;
@@ -182,10 +181,10 @@ namespace Application1.Views
                 {
                     ((MainView)Parent).EndConnect(this);
                 }
-                catch (Device.CantConnectError)
+                catch (Device.ConnectionError error)
                 {
                     var error_view = new ToolTip();
-                    error_view.Content = "Устройства уже соединены.";
+                    error_view.Content = error.Message;
                     ToolTip = error_view;
                     error_view.IsOpen = true;
                 }

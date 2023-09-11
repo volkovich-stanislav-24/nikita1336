@@ -1,6 +1,16 @@
 ﻿using Application1.Models;
+using Application1.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+
+namespace Application1.Converters
+{
+    public sealed class ContentViewDeviceTypeViewHeightConverter
+    {
+
+    }
+}
 
 namespace Application1.Views
 {
@@ -8,28 +18,15 @@ namespace Application1.Views
     {
         public ContentView()
         {
+            Resources["PCTypeViewModel"] = DeviceTypeViewModel.One(typeof(PC));
             InitializeComponent();
         }
 
-        void PC_Click(object sender, RoutedEventArgs e)
+        // Device Type View
+
+        void __DeviceTypeView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            string name = "New PC";
-            string id = "";
-            long id_as_long = 1;
-            do
-            {
-                try
-                {
-                    new PC(name + id);
-                    e.Handled = true;
-                    return;
-                }
-                catch (PC.NameError)
-                {
-                    id = id_as_long.ToString();
-                    ++id_as_long;
-                }
-            } while (true);
+            DragDrop.DoDragDrop(this, sender, DragDropEffects.Copy);
         }
     }
 }
