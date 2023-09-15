@@ -4,6 +4,7 @@
     {
         public PC(string name) : base(name)
         {
+            MaxConnections = 1;
         }
     }
 }

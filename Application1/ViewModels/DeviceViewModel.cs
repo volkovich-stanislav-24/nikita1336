@@ -10,7 +10,6 @@ namespace Application1.ViewModels
 
         // Construction
 
-        // Пусть модель представления нельзя создать, только получить (One).
         protected DeviceViewModel(Device device) : base(device)
         {
         }

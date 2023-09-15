@@ -73,18 +73,21 @@ namespace Application1.Models
         public delegate void ConnectDisconnectHandler(Device source, Device destination);
         // Пусть модель сообщает о соединении.
         public static event ConnectDisconnectHandler? OnConnect;
-        // Одностороннее соединение. Применяется только с обратным.
-        void __Connect(Device destination)
+        void __PreConnect(Device destination)
         {
             if (__connections.Count == MaxConnections) // Если текущее количество соединений равно максимальному, то ошибка.
                 throw new NoConnectionError();
             if (IsConnected(destination)) // Если модели уже соединены, то ошибка.
                 throw new ConnectedError();
-            __connections.Add(destination);
         }
+        // Одностороннее соединение. Применяется только с обратным.
+        void __Connect(Device destination)
+            => __connections.Add(destination);
         // Двусторонее соединение.
         public void Connect(Device destination)
         {
+            __PreConnect(destination);
+            destination.__PreConnect(this);
             __Connect(destination);
             destination.__Connect(this);
             if (OnConnect != null)

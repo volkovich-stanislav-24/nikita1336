@@ -6,12 +6,13 @@
     mc:Ignorable="d"
     xmlns:vs="clr-namespace:Application1.Views"
     Title="MainWindow"
+    MinHeight="512" MinWidth="1024"
     Height="512" Width="1024"
 >
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.1*"/>
-            <ColumnDefinition Width="0.9*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <vs:ContentView Grid.Column="0"/>
         <vs:MainView Grid.Column="1"/>

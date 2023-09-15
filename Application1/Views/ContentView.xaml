@@ -5,10 +5,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:vs="clr-namespace:Application1.Views"
-    xmlns:vms="clr-namespace:Application1.ViewModels"
+    xmlns:converters="clr-namespace:Application1.Converters"
     d:DesignHeight="512" d:DesignWidth="128"
+    x:Name="root"
+    VerticalScrollBarVisibility="Auto"
 >
+    <ScrollViewer.Resources>
+        <converters:ContentViewDeviceTypeViewHeightConverter x:Key="DeviceTypeViewHeightConverter"/>
+    </ScrollViewer.Resources>
     <StackPanel>
-        <vs:DeviceTypeView ViewModel="{StaticResource PCTypeViewModel}" MouseLeftButtonDown="__DeviceTypeView_MouseLeftButtonDown"/>
+        <vs:DeviceTypeView ViewModel="{StaticResource PCTypeViewModel}" MouseLeftButtonDown="DeviceTypeView_MouseLeftButtonDown" Height="{Binding ActualHeight, ElementName=root, Converter={StaticResource DeviceTypeViewHeightConverter}}"/>
+        <vs:DeviceTypeView ViewModel="{StaticResource SwitchTypeViewModel}" MouseLeftButtonDown="DeviceTypeView_MouseLeftButtonDown" Height="{Binding ActualHeight, ElementName=root, Converter={StaticResource DeviceTypeViewHeightConverter}}"/>
     </StackPanel>
 </ScrollViewer>

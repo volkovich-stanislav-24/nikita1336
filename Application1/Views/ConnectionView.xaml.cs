@@ -2,33 +2,32 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Shapes;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Application1.Converters
 {
-    abstract class ConnectionViewLineXYConverter
+    abstract class ConnectionViewLineYXConverter
     {
         protected double ValueAsDouble(object value)
             => value is double && !double.IsNaN((double)value) ? (double)value : 0;
     }
-
-    sealed class ConnectionViewLineXConverter : ConnectionViewLineXYConverter, IMultiValueConverter
-    {
-        // values[0] - width
-        // values[1] - x
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-            => ValueAsDouble(values[1]) + ValueAsDouble(values[0]) * .5;
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
-    }
-    sealed class ConnectionViewLineYConverter : ConnectionViewLineXYConverter, IMultiValueConverter
+    sealed class ConnectionViewLineYConverter : ConnectionViewLineYXConverter, IMultiValueConverter
     {
         // values[0] - height
         // values[1] - y
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
             => ValueAsDouble(values[1]) + ValueAsDouble(values[0]);
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
+    }
+    sealed class ConnectionViewLineXConverter : ConnectionViewLineYXConverter, IMultiValueConverter
+    {
+        // values[0] - width
+        // values[1] - x
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+            => ValueAsDouble(values[1]) + ValueAsDouble(values[0]) * .5;
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
@@ -38,54 +37,52 @@ namespace Application1.Views
 {
     public partial class ConnectionView : Canvas
     {
-        const string DELETE_TITLE = "Удаление соединения между {0} и {1}";
-        const string DELETE_TEXT = "Вы точно хотите удалить соединение между {0} и {1}?";
+        const string __DELETE_TITLE = "Удаление соединения между {0} и {1}";
+        const string __DELETE_TEXT = "Вы точно хотите удалить соединение между {0} и {1}?";
 
-        public static readonly DependencyProperty FirstDeviceViewProperty = DependencyProperty.Register(
-            nameof(FirstDeviceView),
+        public static readonly DependencyProperty SourceDeviceViewProperty = DependencyProperty.Register(
+            nameof(SourceDeviceView),
             typeof(DeviceView),
             typeof(ConnectionView)
         );
-        public DeviceView FirstDeviceView
+        public DeviceView SourceDeviceView
         {
-            get => (DeviceView)GetValue(FirstDeviceViewProperty);
-            set => SetValue(FirstDeviceViewProperty, value);
+            get => (DeviceView)GetValue(SourceDeviceViewProperty);
+            set => SetValue(SourceDeviceViewProperty, value);
         }
-        public static readonly DependencyProperty SecondDeviceViewProperty = DependencyProperty.Register(
-            nameof(SecondDeviceView),
+        public static readonly DependencyProperty DestinationDeviceViewProperty = DependencyProperty.Register(
+            nameof(DestinationDeviceView),
             typeof(DeviceView),
             typeof(ConnectionView)
         );
-        public DeviceView SecondDeviceView
+        public DeviceView DestinationDeviceView
         {
-            get => (DeviceView)GetValue(SecondDeviceViewProperty);
-            set => SetValue(SecondDeviceViewProperty, value);
+            get => (DeviceView)GetValue(DestinationDeviceViewProperty);
+            set => SetValue(DestinationDeviceViewProperty, value);
         }
 
         public ConnectionView()
-        {
-            InitializeComponent();
-        }
+            => InitializeComponent();
 
-        // Line
+        // line
 
-        void Line_KeyUp(object sender, KeyEventArgs e)
+        void line_KeyUp(object sender, KeyEventArgs e)
         {
-            var valid_sender = ((Line)sender);
+            var valid_sender = (Line)sender;
             if (e.Key == Key.Delete
                 && MessageBox.Show(
-                    string.Format(DELETE_TEXT, FirstDeviceView.ViewModel.Model.Name, SecondDeviceView.ViewModel.Model.Name),
-                    string.Format(DELETE_TITLE, FirstDeviceView.ViewModel.Model.Name, SecondDeviceView.ViewModel.Model.Name),
+                    string.Format(__DELETE_TEXT, SourceDeviceView.ViewModel.Model.Name, DestinationDeviceView.ViewModel.Model.Name),
+                    string.Format(__DELETE_TITLE, SourceDeviceView.ViewModel.Model.Name, DestinationDeviceView.ViewModel.Model.Name),
                     MessageBoxButton.YesNo
                 ) == MessageBoxResult.Yes
             )
-                FirstDeviceView.ViewModel.Model.Disconnect(SecondDeviceView.ViewModel.Model);
+                SourceDeviceView.ViewModel.Model.Disconnect(DestinationDeviceView.ViewModel.Model);
             e.Handled = true;
         }
 
-        void Line_MouseLeftUp(object sender, MouseButtonEventArgs e)
+        void line_MouseLeftUp(object sender, MouseButtonEventArgs e)
         {
-            var valid_sender = ((Line)sender);
+            var valid_sender = (Line)sender;
             valid_sender.Focus();
             e.Handled = true;
         }

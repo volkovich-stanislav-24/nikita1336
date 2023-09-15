@@ -9,10 +9,14 @@
 
   <ItemGroup>
     <None Remove="Content\Images\PC.png" />
+    <None Remove="Content\Images\Switch.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Content\Images\PC.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Content\Images\Switch.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

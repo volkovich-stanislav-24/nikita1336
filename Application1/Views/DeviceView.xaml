@@ -8,11 +8,12 @@
     xmlns:Converters="clr-namespace:Application1.Converters"
     x:Name="root"
     Width="128" Height="128"
-    Focusable="True" KeyUp="root_KeyUp" MouseLeftButtonDown="root_MouseLeftButtonDown" MouseLeftButtonUp="root_MouseLeftButtonUp" MouseMove="root_MouseMove"
+    Focusable="True" KeyUp="root_KeyUp" MouseLeftButtonDown="root_MouseLeftDown" MouseLeftButtonUp="root_MouseLeftUp" MouseMove="root_MouseMove"
+    DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
 >
     <Grid.Resources>
         <ResourceDictionary>
-            <Style x:Key="CustomTextBoxStyle" TargetType="{x:Type TextBox}">
+            <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
                 <Setter Property="TextAlignment" Value="Center"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -22,7 +23,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
+            
             <ResourceDictionary x:Key="EllipseColors">
                 <SolidColorBrush x:Key="On">Green</SolidColorBrush>
                 <SolidColorBrush x:Key="Off">Red</SolidColorBrush>
@@ -34,27 +35,27 @@
     </Grid.Resources>
     <Grid.RowDefinitions>
         <RowDefinition Height="auto"></RowDefinition>
-        <RowDefinition Height="*"></RowDefinition>
+        <RowDefinition></RowDefinition>
         <RowDefinition Height="auto"></RowDefinition>
     </Grid.RowDefinitions>
-    <TextBox Style="{StaticResource CustomTextBoxStyle}" DataContext="{Binding ViewModel.Model, ElementName=root}" x:Name="Name" Grid.Row="0" KeyUp="TextBox_KeyUp" Validation.Error="Name_Error">
+    <TextBox Style="{StaticResource TextBoxStyle}" Validation.Error="name_Error" Grid.Row="0">
         <Validation.ErrorTemplate>
             <ControlTemplate/>
         </Validation.ErrorTemplate>
         <TextBox.Text>
-            <Binding Path="Name" ValidatesOnExceptions="True" NotifyOnValidationError="True"/>
+            <Binding Path="Model.Name" ValidatesOnExceptions="True" NotifyOnValidationError="True"/>
         </TextBox.Text>
     </TextBox>
-    <Image Grid.Row="1" Source="{Binding ViewModel.Image, ElementName=root}"/>
-    <Grid DataContext="{Binding ViewModel.Model, ElementName=root}" Grid.Row="2">
+    <Image Source="{Binding Image}" Grid.Row="1"/>
+    <Grid Grid.Row="2">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition/>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Ellipse Panel.ZIndex="100" Fill="{Binding IsOn, Converter={StaticResource IsOnImageConverter}, ConverterParameter={StaticResource EllipseColors}}"
-            Width="{StaticResource EllipseSize}" Height="{StaticResource EllipseSize}" Grid.Column="1"
-            Focusable="True" MouseUp="Connections_MouseUp" MouseDown="Connections_MouseDown"  KeyUp="Connections_KeyUp"
+        <Ellipse Fill="{Binding Model.IsOn, Converter={StaticResource IsOnImageConverter}, ConverterParameter={StaticResource EllipseColors}}"
+            Focusable="True" KeyUp="connections_KeyUp" MouseLeftButtonDown="connections_MouseLeftDown" MouseLeftButtonUp="connections_MouseLeftUp"
+            Height="{StaticResource EllipseSize}" Width="{StaticResource EllipseSize}" Grid.Column="1"
         />
         <Grid Grid.Column="2">
             <Grid.ColumnDefinitions>
@@ -62,14 +63,14 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{Binding Connections.Count}" Grid.Column="0"/>
+            <TextBlock Text="{Binding Model.Connections.Count}" Grid.Column="0"/>
             <TextBlock Text="/" Grid.Column="1"/>
-            <TextBox Style="{StaticResource CustomTextBoxStyle}" Validation.Error="MaxConnections_Error" Grid.Column="2">
+            <TextBox Style="{StaticResource TextBoxStyle}" Margin="0" TextAlignment="Left" Validation.Error="max_connections_Error" Grid.Column="2">
                 <Validation.ErrorTemplate>
                     <ControlTemplate/>
                 </Validation.ErrorTemplate>
                 <TextBox.Text>
-                    <Binding Path="MaxConnections" ValidatesOnExceptions="True" NotifyOnValidationError="True"/>
+                    <Binding Path="Model.MaxConnections" ValidatesOnExceptions="True" NotifyOnValidationError="True"/>
                 </TextBox.Text>
             </TextBox>
         </Grid>

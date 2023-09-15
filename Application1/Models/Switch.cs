@@ -4,6 +4,7 @@
     {
         public Switch(string name) : base(name)
         {
+            MaxConnections = 4;
         }
     }
 }
