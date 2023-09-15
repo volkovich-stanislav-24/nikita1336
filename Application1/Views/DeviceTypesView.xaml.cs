@@ -20,9 +20,9 @@ namespace Application1.Converters
 
 namespace Application1.Views
 {
-    public partial class ContentView : ScrollViewer
+    public partial class DeviceTypesView : ScrollViewer
     {
-        public ContentView()
+        public DeviceTypesView()
         {
             Resources["PCTypeViewModel"] = DeviceTypeViewModel.One(typeof(PC));
             Resources["SwitchTypeViewModel"] = DeviceTypeViewModel.One(typeof(Switch));

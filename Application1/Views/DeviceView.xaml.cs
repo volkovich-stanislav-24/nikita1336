@@ -99,10 +99,13 @@ namespace Application1.Views
             var valid_sender = (DeviceView)sender;
             if (valid_sender.__is_dragging)
             {
+                var parent_canvas = (Canvas)Parent;
+                var parent_sw = (ScrollViewer)parent_canvas.Parent;
                 var mouse_position = e.GetPosition((UIElement)valid_sender.Parent);
                 double y = mouse_position.Y - valid_sender.Height * .5, x = mouse_position.X - valid_sender.Width * .5;
                 Canvas.SetTop(valid_sender, y);
                 Canvas.SetLeft(valid_sender, x);
+                double offset_y = y;
                 e.Handled = true;
             }
         }
@@ -142,13 +145,13 @@ namespace Application1.Views
 
         void connections_MouseLeftDown(object sender, MouseButtonEventArgs e)
         {
-            ((MainView)((Canvas)Parent).Parent).BeginConect(this);
+            ((DevicesView)((Canvas)Parent).Parent).BeginConect(this);
             e.Handled = true;
         }
 
         void connections_MouseLeftUp(object sender, MouseButtonEventArgs e)
         {
-            if (!((MainView)((Canvas)Parent).Parent).EndConnect(this))
+            if (!((DevicesView)((Canvas)Parent).Parent).EndConnect(this))
                 ViewModel.Model.IsOn = !ViewModel.Model.IsOn;
         }
 

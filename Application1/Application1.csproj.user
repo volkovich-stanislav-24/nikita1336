@@ -7,13 +7,16 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Views\ContentView.xaml.cs">
+    <Compile Update="Views\DeviceTypesView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\DeviceTypeView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\MainView.xaml.cs">
+    <Compile Update="Views\DevicesView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ResizableCanvas.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -24,13 +27,16 @@
     <Page Update="Views\ConnectionView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\ContentView.xaml">
+    <Page Update="Views\DeviceTypesView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\DeviceTypeView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\MainView.xaml">
+    <Page Update="Views\DevicesView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ResizableCanvas.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
