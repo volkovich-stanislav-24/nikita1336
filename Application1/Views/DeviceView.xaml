@@ -8,7 +8,7 @@
     xmlns:Converters="clr-namespace:Application1.Converters"
     x:Name="root"
     Width="128" Height="128"
-    Focusable="True" KeyUp="root_KeyUp" MouseLeftButtonDown="root_MouseLeftDown" MouseLeftButtonUp="root_MouseLeftUp" MouseMove="root_MouseMove"
+    Focusable="True" KeyUp="root_KeyUp" MouseLeftButtonDown="root_MouseLeftDown"
     DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
 >
     <Grid.Resources>

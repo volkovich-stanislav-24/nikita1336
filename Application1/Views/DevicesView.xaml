@@ -1,21 +1,16 @@
-﻿<ScrollViewer x:Class="Application1.Views.DevicesView"
+﻿<UserControl x:Class="Application1.Views.DevicesView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     mc:Ignorable="d"
     xmlns:s="clr-namespace:System;assembly=mscorlib"
+    xmlns:vs="clr-namespace:Application1.Views"
     d:DesignHeight="512" d:DesignWidth="512"
-    VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"
-    ClipToBounds="True" AllowDrop="True" Drop="canvas_Drop"
-    MouseLeftButtonUp="canvas_MouseLeftUp" MouseMove="canvas_MouseMove"
 >
-    <ScrollViewer.Resources>
+    <UserControl.Resources>
         <SolidColorBrush x:Key="ConnectionLineColor">Yellow</SolidColorBrush>
         <s:Double x:Key="ConnectionLineSize">2</s:Double>
-    </ScrollViewer.Resources>
-    <Canvas x:Name="canvas"
-        Height="5000"
-    >
-    </Canvas>
-</ScrollViewer>
+    </UserControl.Resources>
+    <vs:ResizableCanvas x:Name="canvas" Drop="canvas_Drop" AllowDrop="True" MouseLeftButtonUp="canvas_MouseLeftUp" MouseMove="canvas_MouseMove"/>
+</UserControl>

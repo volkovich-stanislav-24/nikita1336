@@ -10,16 +10,14 @@ using System.Windows.Input;
 
 namespace Application1.Views
 {
-    public partial class DevicesView : ScrollViewer
+    public partial class DevicesView : UserControl
     {
-        public UIElementCollection Children => canvas.Children;
-
         IReadOnlyList<DeviceView> __DeviceViews
         {
             get
             {
-                List<DeviceView> to_return = new(Children.Count);
-                foreach (UIElement child in Children)
+                List<DeviceView> to_return = new(canvas.Children.Count);
+                foreach (UIElement child in canvas.Children)
                     if (child is DeviceView)
                         to_return.Add((DeviceView)child);
                 return to_return;
@@ -36,8 +34,8 @@ namespace Application1.Views
         {
             get
             {
-                List<ConnectionView> to_return = new(Children.Count);
-                foreach (UIElement child in Children)
+                List<ConnectionView> to_return = new(canvas.Children.Count);
+                foreach (UIElement child in canvas.Children)
                     if (child is ConnectionView)
                         to_return.Add((ConnectionView)child);
                 return to_return;
@@ -63,19 +61,19 @@ namespace Application1.Views
                 dv.ViewModel = DeviceViewModel.One(d);
                 Canvas.SetLeft(dv, __new_device_view_point.X - dv.Width * .5);
                 Canvas.SetTop(dv, __new_device_view_point.Y - dv.Height * .5);
-                Children.Add(dv);
+                canvas.Children.Add(dv);
             };
             Device.OnDeleted += (d) => {
-                Children.Remove(__DeviceView(DeviceViewModel.One(d)));
+                canvas.Children.Remove(__DeviceView(DeviceViewModel.One(d)));
             };
             Device.OnConnect += (d1, d2) => {
                 var cv = new ConnectionView();
                 cv.SourceDeviceView = __DeviceView(DeviceViewModel.One(d1));
                 cv.DestinationDeviceView = __DeviceView(DeviceViewModel.One(d2));
-                Children.Add(cv);
+                canvas.Children.Add(cv);
             };
             Device.OnDisconnect += (d1, d2) => {
-                Children.Remove(__ConnectionView(__DeviceView(DeviceViewModel.One(d1)), __DeviceView(DeviceViewModel.One(d2))));
+                canvas.Children.Remove(__ConnectionView(__DeviceView(DeviceViewModel.One(d1)), __DeviceView(DeviceViewModel.One(d2))));
             };
         }
 
@@ -91,7 +89,8 @@ namespace Application1.Views
             {
                 try
                 {
-                    Activator.CreateInstance(dtv.ViewModel.Model,
+                    Activator.CreateInstance(
+                        dtv.ViewModel.Model,
                         name + id
                     );
                     e.Handled = true;
@@ -116,7 +115,7 @@ namespace Application1.Views
         {
             if (__source != null)
             {
-                Children.Remove(__connection_line);
+                canvas.Children.Remove(__connection_line);
                 __connection_line = null;
                 try
                 {
@@ -137,11 +136,11 @@ namespace Application1.Views
             return false;
         }
 
-        void canvas_MouseLeftUp(object sender, MouseEventArgs e)
+        void canvas_MouseLeftUp(object sender, MouseButtonEventArgs e)
         {
             if (__connection_line != null)
             {
-                Children.Remove(__connection_line);
+                canvas.Children.Remove(__connection_line);
                 __connection_line = null;
                 __source = null;
             }
@@ -160,15 +159,16 @@ namespace Application1.Views
                 var mouse_position = e.GetPosition(this);
                 __connection_line.X2 = mouse_position.X;
                 __connection_line.Y2 = mouse_position.Y;
-                Children.Add(__connection_line);
+                canvas.Children.Add(__connection_line);
+                e.Handled = true;
             }
             else if (__connection_line != null)
             {
                 var mouse_position = e.GetPosition(this);
                 __connection_line.X2 = mouse_position.X;
                 __connection_line.Y2 = mouse_position.Y;
+                e.Handled = true;
             }
-            e.Handled = true;
         }
     }
 }

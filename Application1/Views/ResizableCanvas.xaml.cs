@@ -1,48 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Markup;
 
 namespace Application1.Views
 {
+    [ContentProperty(nameof(Children))]
     public partial class ResizableCanvas : ScrollViewer
     {
+        public static readonly DependencyPropertyKey ChildrenProperty = DependencyProperty.RegisterReadOnly(
+            nameof(Children),
+            typeof(UIElementCollection),
+            typeof(ResizableCanvas),
+            new PropertyMetadata()
+        );
+        public UIElementCollection Children
+        {
+            get => (UIElementCollection)GetValue(ChildrenProperty.DependencyProperty);
+            private init => SetValue(ChildrenProperty, value);
+        }
+
         public ResizableCanvas()
         {
             InitializeComponent();
+            Children = canvas.Children;
         }
 
         FrameworkElement? __dragging;
 
-        void rectangle_MouseLeftDown(object sender, MouseButtonEventArgs e)
+        public void BeginDrag(FrameworkElement dragging)
         {
-            __dragging = (FrameworkElement)sender;
+            __dragging = dragging;
         }
 
-        void rectangle_MouseLeftUp(object sender, MouseButtonEventArgs e)
+        void canvas_MouseLeftUp(object sender, MouseButtonEventArgs e)
         {
             __dragging = null;
         }
 
-        void rectangle_MouseMove(object sender, MouseEventArgs e)
+        void canvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (__dragging != null)
             {
                 var mouse_position = e.GetPosition(canvas);
                 double y = mouse_position.Y - __dragging.ActualHeight * .5, x = mouse_position.X - __dragging.ActualWidth * .5;
                 double y_w_offset = y - VerticalOffset, x_w_offset = x - HorizontalOffset;
-                tb.Text = $"y: {Math.Round(y)}; x: {Math.Round(x)}.";
-                tb_offsets.Text = $"y: {Math.Round(y_w_offset)}; x: {Math.Round(x_w_offset)}.";
                 if (y_w_offset < 0)
                     ScrollToVerticalOffset(VerticalOffset + y_w_offset);
                 else if (y_w_offset + __dragging.ActualHeight > ViewportHeight)

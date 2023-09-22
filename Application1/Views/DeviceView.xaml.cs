@@ -84,30 +84,8 @@ namespace Application1.Views
         {
             var valid_sender = (DeviceView)sender;
             valid_sender.Focus();
-            valid_sender.__is_dragging = true;
+            ((ResizableCanvas)((Canvas)Parent).Parent).BeginDrag(this);
             e.Handled = true;
-        }
-
-        void root_MouseLeftUp(object sender, MouseButtonEventArgs e)
-        {
-            var valid_sender = (DeviceView)sender;
-            valid_sender.__is_dragging = false;
-        }
-
-        void root_MouseMove(object sender, MouseEventArgs e)
-        {
-            var valid_sender = (DeviceView)sender;
-            if (valid_sender.__is_dragging)
-            {
-                var parent_canvas = (Canvas)Parent;
-                var parent_sw = (ScrollViewer)parent_canvas.Parent;
-                var mouse_position = e.GetPosition((UIElement)valid_sender.Parent);
-                double y = mouse_position.Y - valid_sender.Height * .5, x = mouse_position.X - valid_sender.Width * .5;
-                Canvas.SetTop(valid_sender, y);
-                Canvas.SetLeft(valid_sender, x);
-                double offset_y = y;
-                e.Handled = true;
-            }
         }
 
         // name
@@ -145,13 +123,13 @@ namespace Application1.Views
 
         void connections_MouseLeftDown(object sender, MouseButtonEventArgs e)
         {
-            ((DevicesView)((Canvas)Parent).Parent).BeginConect(this);
+            ((DevicesView)((ResizableCanvas)((Canvas)Parent).Parent).Parent).BeginConect(this);
             e.Handled = true;
         }
 
         void connections_MouseLeftUp(object sender, MouseButtonEventArgs e)
         {
-            if (!((DevicesView)((Canvas)Parent).Parent).EndConnect(this))
+            if (!((DevicesView)((ResizableCanvas)((Canvas)Parent).Parent).Parent).EndConnect(this))
                 ViewModel.Model.IsOn = !ViewModel.Model.IsOn;
         }
 
@@ -178,8 +156,8 @@ namespace Application1.Views
 
             /*var bindingExpression = BindingOperations.GetBindingExpression(valid_sender, TextBox.TextProperty);
             if (bindingExpression != null && bindingExpression.ValidationError != null)
-                Validation.ClearInvalid(bindingExpression);
-            valid_sender.Text = ViewModel.Model.MaxConnections.ToString();*/
+                Validation.ClearInvalid(bindingExpression);*/
+            valid_sender.Text = ViewModel.Model.MaxConnections.ToString();
         }
     }
 }
